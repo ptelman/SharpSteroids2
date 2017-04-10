@@ -32,6 +32,8 @@ namespace SharpSteroids
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferHeight = 720;
             graphics.PreferredBackBufferWidth = 1280;
+            GameObjects.windowWidth = graphics.PreferredBackBufferWidth;
+            GameObjects.windowHeight = graphics.PreferredBackBufferHeight;
             //graphics.IsFullScreen = true;
             Content.RootDirectory = "Resources";
             this.Ship = GameObjects.Ship;

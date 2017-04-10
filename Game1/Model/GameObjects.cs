@@ -8,6 +8,7 @@ namespace SharpSteroids.Base.Model
         private static Ship _ship;
         private static IList<Asteroid> _asteroids;
         private static IList<Shoot> _shoots;
+        public static int windowWidth, windowHeight;
 
         public static Ship Ship
         {
@@ -15,7 +16,7 @@ namespace SharpSteroids.Base.Model
             {
                 if (_ship == null)
                 {
-                    _ship = new Ship(new SharpSteroids.Model.Coordinates(300, 300));
+                    _ship = new Ship(new SharpSteroids.Model.Coordinates(300, 300), windowWidth, windowHeight);
                 }
                 return _ship;
             }

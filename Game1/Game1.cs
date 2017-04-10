@@ -96,6 +96,10 @@ namespace SharpSteroids
             {
                 Ship.MoveForwards();
             }
+            else
+            {
+                Ship.Move();
+            }
 
 
             // TODO: Add your update logic here

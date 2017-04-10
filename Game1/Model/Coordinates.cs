@@ -2,10 +2,10 @@
 {
     public class Coordinates
     {
-        public int x { get; set; }
-        public int y { get; set; }
+        public float x { get; set; }
+        public float y { get; set; }
 
-        public Coordinates(int x, int y)
+        public Coordinates(float x, float y)
         {
             this.x = x;
             this.y = y;

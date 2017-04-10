@@ -9,6 +9,10 @@ namespace SharpSteroids.Base.Model.Objects
     {
         public float Angle = 0.0f;
 
+        private float speedX = 0f;
+        private float speedY = 0f;
+        private float speedAngle = 0f;
+
         private Coordinates _coordinates;
         public Coordinates Coordinates
         {
@@ -28,12 +32,20 @@ namespace SharpSteroids.Base.Model.Objects
             throw new NotImplementedException();
         }
 
+        public void Move()
+        {
+            this._coordinates.x += speedX;
+            this._coordinates.y += speedY;
+        }
+
         public void MoveForwards()
         {
-            var cordsToMove = TrigonometryHelper.MoveByIntoDirection(5, Angle);
+            var speedToAdd = TrigonometryHelper.MoveByIntoDirection(0.2f, Angle);
 
-            this._coordinates.x += cordsToMove.x;
-            this._coordinates.y += cordsToMove.y;
+            this.speedX += speedToAdd.x;
+            this.speedY += speedToAdd.y;
+
+            this.Move();
         }
     }
 }

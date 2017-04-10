@@ -9,10 +9,10 @@ namespace SharpSteroids.Helpers
 {
     public static class TrigonometryHelper
     {
-        public static Coordinates MoveByIntoDirection(int howFar, float angle)
+        public static Coordinates MoveByIntoDirection(float howFar, float angle)
         {
-            int y = -(int)(Math.Cos(angle) * howFar);
-            int x = (int)(Math.Sin(angle) * howFar);
+            float y = -(float)(Math.Cos(angle) * howFar);
+            float x = (float)(Math.Sin(angle) * howFar);
             return new Coordinates(x, y);
         }
     }

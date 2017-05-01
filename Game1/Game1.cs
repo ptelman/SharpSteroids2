@@ -5,6 +5,7 @@ using SharpSteroids.Base.Model;
 using SharpSteroids.Base.Model.Objects;
 using SharpSteroids.Model;
 using System;
+using System.Collections.Generic;
 
 namespace SharpSteroids
 {
@@ -18,7 +19,9 @@ namespace SharpSteroids
         private Texture2D shipTexture;
         private Texture2D asteroidTexture;
         private Texture2D shootTexture;
+        private SpriteFont Font1;
 
+        private int score = 0;
         private float shootTimer = 0.3f;
         private float asteroidTimer = 1f;
         private float baseShootTIMER = 0.3f;
@@ -58,6 +61,7 @@ namespace SharpSteroids
             this.shipTexture = Content.Load<Texture2D>("Textures\\ship");
             this.shootTexture = Content.Load<Texture2D>("Textures\\torpedo");
             this.asteroidTexture = Content.Load<Texture2D>("Textures\\asteroid");
+            this.Font1 = Content.Load<SpriteFont>("Font");
 
             GameSharedItems.Ship = new Ship(new Coordinates(300, 300), shipTexture.Width, shipTexture.Height);
             // TODO: use this.Content to load your game content here
@@ -98,7 +102,8 @@ namespace SharpSteroids
             }
             GameSharedItems.Ship.Move();
 
-            DetectCollitions();
+            DetectShipCollisionWithAsteroid();
+            DetectShootsCollisionWithAsteroids();
             // TODO: Add your update logic here
 
             base.Update(gameTime);
@@ -122,6 +127,8 @@ namespace SharpSteroids
             DrawShoots(gameTime);
             DrawAsteroids(gameTime);
 
+            spriteBatch.DrawString(Font1, $"Score: {score}", new Vector2(5, 5), Color.Black);
+
             spriteBatch.End();
 
             // TODO: Add your drawing code here
@@ -129,16 +136,42 @@ namespace SharpSteroids
             base.Draw(gameTime);
         }
 
-        private void DetectCollitions()
+        private void DetectShootsCollisionWithAsteroids()
+        {
+            List<Asteroid> asteroids = new List<Asteroid>();
+            List<Shoot> shoots = new List<Shoot>();
+
+            foreach(var asteroid in GameSharedItems.Asteroids)
+            {
+                foreach(var shoot in GameSharedItems.Shoots)
+                {
+                    var distance = GetDistanceBetweenCoordinates(asteroid.Coordinates, shoot.Coordinates);
+                    if (distance < 30)
+                    {
+                        asteroids.Add(asteroid);
+                        shoots.Add(shoot);
+                        score++;
+                    }
+                }
+            }
+            foreach(var asteroid in asteroids)
+            {
+                GameSharedItems.Asteroids.Remove(asteroid);
+            }
+            foreach (var shoot in shoots)
+            {
+                GameSharedItems.Shoots.Remove(shoot);
+            }
+        }
+
+        private void DetectShipCollisionWithAsteroid()
         {
             foreach (var asteroid in GameSharedItems.Asteroids)
             {
-                float maxDistance = ((shipTexture.Width * GameSharedItems.shipScale + shipTexture.Height * GameSharedItems.shipScale) / 2) - 10;
                 var distance = GetDistanceBetweenCoordinates(GameSharedItems.Ship.Coordinates, asteroid.Coordinates);
-                if (distance <= maxDistance)
+                if (distance <= 40)
                 {
-                    //collision with asteroid
-                    asteroid.Coordinates.y = 25;
+                    //ship collided with asteroid
                 }
             }
         }

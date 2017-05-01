@@ -65,10 +65,10 @@
   <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" />
     <None Include="app.manifest" />
-    <None Include="Resources\Textures\asteroid.xnb">
+    <Content Include="Resources\Font.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Content\spaceship.xnb">
+    </Content>
+    <None Include="Resources\Textures\asteroid.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Resources\Textures\ship.xnb">

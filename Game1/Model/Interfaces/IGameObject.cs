@@ -9,6 +9,6 @@ namespace SharpSteroids.Model.Interfaces
     public interface IGameObject
     {
         Coordinates Coordinates { get;}
-        void Move(int x, int y);
+        void Move();
     }
 }

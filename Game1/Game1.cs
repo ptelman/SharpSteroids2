@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
-using SharpSteroids.Base.Model.Objects;
 using SharpSteroids.Base.Model;
+using SharpSteroids.Base.Model.Objects;
 
 namespace SharpSteroids
 {
@@ -17,26 +12,28 @@ namespace SharpSteroids
     /// </summary>
     public class Game1 : Microsoft.Xna.Framework.Game
     {
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
+        private GraphicsDeviceManager graphics;
+        private SpriteBatch spriteBatch;
         private Texture2D shipTexture;
         private Texture2D asteroidTexture;
         private Texture2D shootTexture;
         private Ship Ship;
 
-        float timer = 0.3f;
-        float TIMER = 0.3f;
+        private float shootTimer = 0.3f;
+        private float asteroidTimer = 1f;
+        private float baseShootTIMER = 0.3f;
+        private float baseAsteroidTIMER = 1f;
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferHeight = 720;
             graphics.PreferredBackBufferWidth = 1280;
-            GameObjects.windowWidth = graphics.PreferredBackBufferWidth;
-            GameObjects.windowHeight = graphics.PreferredBackBufferHeight;
+            GameSharedItems.windowWidth = graphics.PreferredBackBufferWidth;
+            GameSharedItems.windowHeight = graphics.PreferredBackBufferHeight;
             //graphics.IsFullScreen = true;
             Content.RootDirectory = "Resources";
-            this.Ship = GameObjects.Ship;
+            this.Ship = GameSharedItems.Ship;
         }
 
         /// <summary>
@@ -61,6 +58,7 @@ namespace SharpSteroids
             spriteBatch = new SpriteBatch(GraphicsDevice);
             this.shipTexture = Content.Load<Texture2D>("Textures\\spaceship");
             this.shootTexture = Content.Load<Texture2D>("Textures\\torpedo");
+            this.asteroidTexture = Content.Load<Texture2D>("Textures\\asteroid");
 
             // TODO: use this.Content to load your game content here
         }
@@ -98,11 +96,7 @@ namespace SharpSteroids
             {
                 Ship.MoveForwards();
             }
-            else
-            {
-                Ship.Move();
-            }
-
+            Ship.Move();
 
             // TODO: Add your update logic here
 
@@ -125,6 +119,8 @@ namespace SharpSteroids
             spriteBatch.Draw(shipTexture, new Vector2(Ship.Coordinates.x, Ship.Coordinates.y), sourceRectangle, Color.White, Ship.Angle, origin, 0.5f, SpriteEffects.None, 1);
 
             DrawShoots(gameTime);
+            DrawAsteroids(gameTime);
+            DetectCollitions();
 
             spriteBatch.End();
 
@@ -133,32 +129,68 @@ namespace SharpSteroids
             base.Draw(gameTime);
         }
 
+        private void DetectCollitions()
+        {
+
+        }
+
+        private void DrawAsteroids(GameTime gameTime)
+        {
+            if (IsTimeToAddAsteroid(gameTime))
+            {
+                var asteroid = new Asteroid();
+                asteroid.Angle = 1f;
+                GameSharedItems.Asteroids.Add(asteroid);
+            }
+
+            foreach (var item in GameSharedItems.Asteroids)
+            {
+                item.Move();
+                Rectangle sourceRectangle = new Rectangle(0, 0, asteroidTexture.Width, asteroidTexture.Height);
+                Vector2 origin = new Vector2(asteroidTexture.Width / 2, asteroidTexture.Height / 2);
+
+                spriteBatch.Draw(asteroidTexture, new Vector2(item.Coordinates.x, item.Coordinates.y), sourceRectangle, Color.White, item.Angle, origin, GameSharedItems.asteroidScale, SpriteEffects.None, 1);
+            }
+        }
+
         private void DrawShoots(GameTime gameTime)
         {
             if (IsTimeToFireShoot(gameTime))
             {
                 var shoot = new Shoot(new Model.Coordinates(Ship.Coordinates.x, Ship.Coordinates.y));
                 shoot.Angle = Ship.Angle;
-                GameObjects.Shoots.Add(shoot);
+                GameSharedItems.Shoots.Add(shoot);
             }
 
-            foreach(var item in GameObjects.Shoots)
+            foreach (var item in GameSharedItems.Shoots)
             {
-                Rectangle sourceRectangle = new Rectangle(0, 0, shootTexture.Width, shootTexture.Height);
+                item.Move();
+                Rectangle sourceRectangle = new Rectangle(0, 0, shootTexture.Width, shootTexture.Height / 2);
                 Vector2 origin = new Vector2(shootTexture.Width / 2, shootTexture.Height / 2);
-                spriteBatch.Draw(shootTexture, new Vector2(item.Coordinates.x, item.Coordinates.y), sourceRectangle, Color.White, item.Angle, origin, 0.05f, SpriteEffects.None, 1);
 
-                item.MoveInDirectionByOne();
+                spriteBatch.Draw(shootTexture, new Vector2(item.Coordinates.x, item.Coordinates.y), sourceRectangle, Color.White, item.Angle, origin, 0.05f, SpriteEffects.None, 1);
             }
+        }
+
+        private bool IsTimeToAddAsteroid(GameTime gameTime)
+        {
+            float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            asteroidTimer -= elapsed;
+            if (asteroidTimer < 0)
+            {
+                asteroidTimer = baseAsteroidTIMER;
+                return true;
+            }
+            return false;
         }
 
         private bool IsTimeToFireShoot(GameTime gameTime)
         {
             float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            timer -= elapsed;
-            if (timer < 0)
+            shootTimer -= elapsed;
+            if (shootTimer < 0)
             {
-                timer = TIMER;
+                shootTimer = baseShootTIMER;
                 return true;
             }
             return false;

@@ -1,14 +1,17 @@
 ﻿using SharpSteroids.Base.Model.Objects;
+using System;
 using System.Collections.Generic;
 
 namespace SharpSteroids.Base.Model
 {
-    public static class GameObjects
+    public static class GameSharedItems
     {
         private static Ship _ship;
         private static IList<Asteroid> _asteroids;
         private static IList<Shoot> _shoots;
         public static int windowWidth, windowHeight;
+        public static Random random = new Random();
+        public static float asteroidScale = 0.2f;
 
         public static Ship Ship
         {
@@ -16,7 +19,7 @@ namespace SharpSteroids.Base.Model
             {
                 if (_ship == null)
                 {
-                    _ship = new Ship(new SharpSteroids.Model.Coordinates(300, 300), windowWidth, windowHeight);
+                    _ship = new Ship(new SharpSteroids.Model.Coordinates(300, 300));
                 }
                 return _ship;
             }

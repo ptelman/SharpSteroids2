@@ -44,7 +44,7 @@
     <Compile Include="Game1.cs" />
     <Compile Include="Helpers\TrigonometryHelper.cs" />
     <Compile Include="Model\Coordinates.cs" />
-    <Compile Include="Model\GameObjects.cs" />
+    <Compile Include="Model\GameSharedItems.cs" />
     <Compile Include="Model\Interfaces\IGameObject.cs" />
     <Compile Include="Model\Objects\Asteroid.cs" />
     <Compile Include="Model\Objects\Ship.cs" />
@@ -65,6 +65,9 @@
   <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" />
     <None Include="app.manifest" />
+    <None Include="Resources\Textures\asteroid.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\spaceship.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

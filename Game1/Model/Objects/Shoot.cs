@@ -24,12 +24,7 @@ namespace SharpSteroids.Base.Model.Objects
             }
         }
 
-        public void Move(int x, int y)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void MoveInDirectionByOne()
+        public void Move()
         {
             var cordsToMove = TrigonometryHelper.MoveByIntoDirection(8, Angle);
 

@@ -8,6 +8,7 @@ namespace SharpSteroids.Base.Model.Objects
     public class Ship : IGameObject
     {
         public float _angle = 0.0f;
+
         public float Angle
         {
             get
@@ -26,10 +27,9 @@ namespace SharpSteroids.Base.Model.Objects
 
         private float speedX = 0f;
         private float speedY = 0f;
-        private int windowWidth;
-        private int windowHeight;
 
         private Coordinates _coordinates;
+
         public Coordinates Coordinates
         {
             get
@@ -38,24 +38,17 @@ namespace SharpSteroids.Base.Model.Objects
             }
         }
 
-        public Ship(Coordinates cords, int windowWidth, int windowHeight)
+        public Ship(Coordinates cords)
         {
             this._coordinates = new Coordinates(cords.x, cords.y);
-            this.windowWidth = windowWidth;
-            this.windowHeight = windowHeight;
-        }
-
-        public void Move(int x, int y)
-        {
-            throw new NotImplementedException();
         }
 
         public void Move()
         {
-            if(!(this.Coordinates.x < 0 && this.speedX < 0) && !(this.Coordinates.x > this.windowWidth && this.speedX > 0))
+            if (!(this.Coordinates.x < 0 && this.speedX < 0) && !(this.Coordinates.x > GameSharedItems.windowWidth && this.speedX > 0))
                 this._coordinates.x += speedX;
 
-            if(!(this.Coordinates.y > this.windowHeight && this.speedY > 0) && !(this.Coordinates.y < 0 && this.speedY < 0))
+            if (!(this.Coordinates.y > GameSharedItems.windowHeight && this.speedY > 0) && !(this.Coordinates.y < 0 && this.speedY < 0))
                 this._coordinates.y += speedY;
         }
 
@@ -65,8 +58,6 @@ namespace SharpSteroids.Base.Model.Objects
 
             this.speedX += speedToAdd.x;
             this.speedY += speedToAdd.y;
-
-            this.Move();
         }
     }
 }

@@ -52,24 +52,11 @@ namespace SharpSteroids.Base.Model.Objects
 
         public void Move()
         {
-            if (this._coordinates.x > this.windowWidth && !((this.Angle > Math.PI / 2 && this.Angle < Math.PI * 1.5 && this._coordinates.y < this.windowHeight/2) || (this.Angle > Math.PI * 1.5 && this.Angle < Math.PI * 2 && this._coordinates.y > this.windowHeight / 2)))
-            {
-                this.speedX = 0;
-            }
-            if (this._coordinates.x < 0 && !((this.Angle > Math.PI / 2 && this.Angle < Math.PI && this._coordinates.y < this.windowHeight / 2) || (this.Angle > 0 && this.Angle < Math.PI / 2 && this._coordinates.y > this.windowHeight / 2)))
-            {
-                this.speedX = 0;
-            }
-            if (this._coordinates.y > this.windowHeight && !((this.Angle > Math.PI * 1.5 && this.Angle < Math.PI * 2 && this._coordinates.x > this.windowWidth / 2) || (this.Angle > 0 && this.Angle < Math.PI / 2 && this._coordinates.x < this.windowWidth / 2)))
-            {
-                this.speedY = 0;
-            }
-            if (this._coordinates.y < 0 && !((this.Angle > Math.PI && this.Angle < Math.PI * 1.5 && this._coordinates.x > this.windowWidth / 2) || (this.Angle > Math.PI * 0.5 && this.Angle < Math.PI && this._coordinates.x < this.windowWidth / 2)))
-            {
-                this.speedY = 0;
-            }
-            this._coordinates.x += speedX;
-            this._coordinates.y += speedY;
+            if(!(this.Coordinates.x < 0 && this.speedX < 0) && !(this.Coordinates.x > this.windowWidth && this.speedX > 0))
+                this._coordinates.x += speedX;
+
+            if(!(this.Coordinates.y > this.windowHeight && this.speedY > 0) && !(this.Coordinates.y < 0 && this.speedY < 0))
+                this._coordinates.y += speedY;
         }
 
         public void MoveForwards()

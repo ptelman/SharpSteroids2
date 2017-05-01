@@ -10,7 +10,6 @@ namespace SharpSteroids.Model.Interfaces
     public interface IGameObject
     {
         Coordinates Coordinates { get;}
-        Rectangle BoundingBox { get; }
         void Move();
     }
 }

@@ -16,18 +16,6 @@ namespace SharpSteroids.Base.Model.Objects
         private int textureWidth;
         private int textureHeight;
 
-        public Rectangle BoundingBox
-        {
-            get
-            {
-                return new Rectangle(
-                    (int)_coordinates.x,
-                    (int)_coordinates.y,
-                    (int)(textureWidth * GameSharedItems.shootScale),
-                    (int)(textureHeight * GameSharedItems.shootScale));
-            }
-        }
-
         public Coordinates Coordinates
         {
             get

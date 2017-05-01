@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SharpSteroids.Base.Model;
 using SharpSteroids.Base.Model.Objects;
+using SharpSteroids.Model;
+using System;
 
 namespace SharpSteroids
 {
@@ -53,11 +55,11 @@ namespace SharpSteroids
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            this.shipTexture = Content.Load<Texture2D>("Textures\\spaceship");
+            this.shipTexture = Content.Load<Texture2D>("Textures\\ship");
             this.shootTexture = Content.Load<Texture2D>("Textures\\torpedo");
             this.asteroidTexture = Content.Load<Texture2D>("Textures\\asteroid");
 
-            GameSharedItems.Ship = new Ship(new SharpSteroids.Model.Coordinates(300, 300), shipTexture.Width, shipTexture.Height);
+            GameSharedItems.Ship = new Ship(new Coordinates(300, 300), shipTexture.Width, shipTexture.Height);
             // TODO: use this.Content to load your game content here
         }
 
@@ -131,10 +133,12 @@ namespace SharpSteroids
         {
             foreach (var asteroid in GameSharedItems.Asteroids)
             {
-                if (GameSharedItems.Ship.BoundingBox.Intersects(asteroid.BoundingBox))
+                float maxDistance = ((shipTexture.Width * GameSharedItems.shipScale + shipTexture.Height * GameSharedItems.shipScale) / 2) - 10;
+                var distance = GetDistanceBetweenCoordinates(GameSharedItems.Ship.Coordinates, asteroid.Coordinates);
+                if (distance <= maxDistance)
                 {
-                    asteroid.Coordinates.x = 1;
-                    asteroid.Coordinates.y = 1;
+                    //collision with asteroid
+                    asteroid.Coordinates.y = 25;
                 }
             }
         }
@@ -200,6 +204,11 @@ namespace SharpSteroids
                 return true;
             }
             return false;
+        }
+
+        private float GetDistanceBetweenCoordinates(Coordinates item1, Coordinates item2)
+        {
+            return (float)Math.Sqrt(Math.Pow((item1.x - item2.x), 2) + Math.Pow((item1.y - item2.y), 2));
         }
     }
 }

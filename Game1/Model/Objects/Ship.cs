@@ -32,18 +32,6 @@ namespace SharpSteroids.Base.Model.Objects
             }
         }
 
-        public Rectangle BoundingBox
-        {
-            get
-            {
-                return new Rectangle(
-                    (int)_coordinates.x,
-                    (int)_coordinates.y,
-                    (int)(textureWidth * GameSharedItems.shipScale),
-                    (int)(textureHeight * GameSharedItems.shipScale));
-            }
-        }
-
         public Coordinates Coordinates
         {
             get

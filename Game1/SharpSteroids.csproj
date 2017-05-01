@@ -9,8 +9,8 @@
     <ProjectGuid>{B467B61B-2FDF-44B2-AA33-0A3B3AFFA8F6}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Game1</RootNamespace>
-    <AssemblyName>Game1</AssemblyName>
+    <RootNamespace>SharpSteroids</RootNamespace>
+    <AssemblyName>SharpSteroids</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MonoGamePlatform>Windows</MonoGamePlatform>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>

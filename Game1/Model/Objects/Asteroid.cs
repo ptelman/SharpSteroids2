@@ -1,4 +1,5 @@
-﻿using SharpSteroids.Model;
+﻿using Microsoft.Xna.Framework;
+using SharpSteroids.Model;
 using SharpSteroids.Model.Interfaces;
 using System;
 
@@ -28,6 +29,20 @@ namespace SharpSteroids.Base.Model.Objects
         private float speedY = 0f;
 
         private Coordinates _coordinates;
+        private int textureWidth;
+        private int textureHeight;
+
+        public Rectangle BoundingBox
+        {
+            get
+            {
+                return new Rectangle(
+                    (int)_coordinates.x,
+                    (int)_coordinates.y,
+                    (int)(GameSharedItems.asteroidScale * textureWidth),
+                    (int)(GameSharedItems.asteroidScale * textureHeight));
+            }
+        }
 
         public Coordinates Coordinates
         {
@@ -37,11 +52,13 @@ namespace SharpSteroids.Base.Model.Objects
             }
         }
 
-        public Asteroid()
+        public Asteroid(int textureWidth, int textureHeight)
         {
             this._coordinates = new Coordinates(GameSharedItems.random.Next(0, GameSharedItems.windowWidth), -20);
             this.speedX = GameSharedItems.random.Next(2, 10) / 10;
             this.speedY = GameSharedItems.random.Next(3, 15) / 10;
+            this.textureWidth = textureWidth;
+            this.textureHeight = textureHeight;
         }
 
         public void Move()

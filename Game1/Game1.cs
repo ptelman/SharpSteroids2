@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SharpSteroids.Base.Model;
@@ -17,7 +16,6 @@ namespace SharpSteroids
         private Texture2D shipTexture;
         private Texture2D asteroidTexture;
         private Texture2D shootTexture;
-        private Ship Ship;
 
         private float shootTimer = 0.3f;
         private float asteroidTimer = 1f;
@@ -33,7 +31,6 @@ namespace SharpSteroids
             GameSharedItems.windowHeight = graphics.PreferredBackBufferHeight;
             //graphics.IsFullScreen = true;
             Content.RootDirectory = "Resources";
-            this.Ship = GameSharedItems.Ship;
         }
 
         /// <summary>
@@ -60,6 +57,7 @@ namespace SharpSteroids
             this.shootTexture = Content.Load<Texture2D>("Textures\\torpedo");
             this.asteroidTexture = Content.Load<Texture2D>("Textures\\asteroid");
 
+            GameSharedItems.Ship = new Ship(new SharpSteroids.Model.Coordinates(300, 300), shipTexture.Width, shipTexture.Height);
             // TODO: use this.Content to load your game content here
         }
 
@@ -86,18 +84,19 @@ namespace SharpSteroids
             KeyboardState currentState = Keyboard.GetState();
             if (currentState.IsKeyDown(Keys.Right))
             {
-                Ship.Angle += 0.1f;
+                GameSharedItems.Ship.Angle += 0.1f;
             }
             if (currentState.IsKeyDown(Keys.Left))
             {
-                Ship.Angle -= 0.1f;
+                GameSharedItems.Ship.Angle -= 0.1f;
             }
             if (currentState.IsKeyDown(Keys.Up))
             {
-                Ship.MoveForwards();
+                GameSharedItems.Ship.MoveForwards();
             }
-            Ship.Move();
+            GameSharedItems.Ship.Move();
 
+            DetectCollitions();
             // TODO: Add your update logic here
 
             base.Update(gameTime);
@@ -116,11 +115,10 @@ namespace SharpSteroids
             //draw ship
             Rectangle sourceRectangle = new Rectangle(0, 0, shipTexture.Width, shipTexture.Height);
             Vector2 origin = new Vector2(shipTexture.Width / 2, shipTexture.Height / 2);
-            spriteBatch.Draw(shipTexture, new Vector2(Ship.Coordinates.x, Ship.Coordinates.y), sourceRectangle, Color.White, Ship.Angle, origin, 0.5f, SpriteEffects.None, 1);
+            spriteBatch.Draw(shipTexture, new Vector2(GameSharedItems.Ship.Coordinates.x, GameSharedItems.Ship.Coordinates.y), sourceRectangle, Color.White, GameSharedItems.Ship.Angle, origin, GameSharedItems.shipScale, SpriteEffects.None, 1);
 
             DrawShoots(gameTime);
             DrawAsteroids(gameTime);
-            DetectCollitions();
 
             spriteBatch.End();
 
@@ -131,14 +129,21 @@ namespace SharpSteroids
 
         private void DetectCollitions()
         {
-
+            foreach (var asteroid in GameSharedItems.Asteroids)
+            {
+                if (GameSharedItems.Ship.BoundingBox.Intersects(asteroid.BoundingBox))
+                {
+                    asteroid.Coordinates.x = 1;
+                    asteroid.Coordinates.y = 1;
+                }
+            }
         }
 
         private void DrawAsteroids(GameTime gameTime)
         {
             if (IsTimeToAddAsteroid(gameTime))
             {
-                var asteroid = new Asteroid();
+                var asteroid = new Asteroid(asteroidTexture.Width, asteroidTexture.Height);
                 asteroid.Angle = 1f;
                 GameSharedItems.Asteroids.Add(asteroid);
             }
@@ -157,18 +162,19 @@ namespace SharpSteroids
         {
             if (IsTimeToFireShoot(gameTime))
             {
-                var shoot = new Shoot(new Model.Coordinates(Ship.Coordinates.x, Ship.Coordinates.y));
-                shoot.Angle = Ship.Angle;
+                var shoot = new Shoot(new Model.Coordinates(GameSharedItems.Ship.Coordinates.x, GameSharedItems.Ship.Coordinates.y), shootTexture.Width, shootTexture.Height);
+                shoot.Angle = GameSharedItems.Ship.Angle;
                 GameSharedItems.Shoots.Add(shoot);
             }
 
             foreach (var item in GameSharedItems.Shoots)
             {
                 item.Move();
+                //HERDASFAWFAWVAWEFAWERAWER HEIGHT/2!!!!!!!!!
                 Rectangle sourceRectangle = new Rectangle(0, 0, shootTexture.Width, shootTexture.Height / 2);
                 Vector2 origin = new Vector2(shootTexture.Width / 2, shootTexture.Height / 2);
 
-                spriteBatch.Draw(shootTexture, new Vector2(item.Coordinates.x, item.Coordinates.y), sourceRectangle, Color.White, item.Angle, origin, 0.05f, SpriteEffects.None, 1);
+                spriteBatch.Draw(shootTexture, new Vector2(item.Coordinates.x, item.Coordinates.y), sourceRectangle, Color.White, item.Angle, origin, GameSharedItems.shootScale, SpriteEffects.None, 1);
             }
         }
 

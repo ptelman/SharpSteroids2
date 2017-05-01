@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,7 @@ namespace SharpSteroids.Model.Interfaces
     public interface IGameObject
     {
         Coordinates Coordinates { get;}
+        Rectangle BoundingBox { get; }
         void Move();
     }
 }

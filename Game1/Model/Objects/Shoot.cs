@@ -1,4 +1,5 @@
-﻿using SharpSteroids.Helpers;
+﻿using Microsoft.Xna.Framework;
+using SharpSteroids.Helpers;
 using SharpSteroids.Model;
 using SharpSteroids.Model.Interfaces;
 using System;
@@ -9,12 +10,23 @@ namespace SharpSteroids.Base.Model.Objects
     {
         public float Angle;
 
-        public Shoot(Coordinates cords)
-        {
-            this._coordinates = cords;
-        }
+        
 
         private Coordinates _coordinates;
+        private int textureWidth;
+        private int textureHeight;
+
+        public Rectangle BoundingBox
+        {
+            get
+            {
+                return new Rectangle(
+                    (int)_coordinates.x,
+                    (int)_coordinates.y,
+                    (int)(textureWidth * GameSharedItems.shootScale),
+                    (int)(textureHeight * GameSharedItems.shootScale));
+            }
+        }
 
         public Coordinates Coordinates
         {
@@ -22,6 +34,13 @@ namespace SharpSteroids.Base.Model.Objects
             {
                 return _coordinates;
             }
+        }
+
+        public Shoot(Coordinates cords, int textureWidth, int textureHeight)
+        {
+            this._coordinates = cords;
+            this.textureWidth = textureWidth;
+            this.textureHeight = textureHeight;
         }
 
         public void Move()

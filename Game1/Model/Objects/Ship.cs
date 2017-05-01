@@ -1,4 +1,5 @@
-﻿using SharpSteroids.Helpers;
+﻿using Microsoft.Xna.Framework;
+using SharpSteroids.Helpers;
 using SharpSteroids.Model;
 using SharpSteroids.Model.Interfaces;
 using System;
@@ -7,6 +8,12 @@ namespace SharpSteroids.Base.Model.Objects
 {
     public class Ship : IGameObject
     {
+        private float speedX = 0f;
+        private float speedY = 0f;
+
+        private Coordinates _coordinates;
+        private int textureWidth;
+        private int textureHeight;
         public float _angle = 0.0f;
 
         public float Angle
@@ -25,10 +32,17 @@ namespace SharpSteroids.Base.Model.Objects
             }
         }
 
-        private float speedX = 0f;
-        private float speedY = 0f;
-
-        private Coordinates _coordinates;
+        public Rectangle BoundingBox
+        {
+            get
+            {
+                return new Rectangle(
+                    (int)_coordinates.x,
+                    (int)_coordinates.y,
+                    (int)(textureWidth * GameSharedItems.shipScale),
+                    (int)(textureHeight * GameSharedItems.shipScale));
+            }
+        }
 
         public Coordinates Coordinates
         {
@@ -38,9 +52,11 @@ namespace SharpSteroids.Base.Model.Objects
             }
         }
 
-        public Ship(Coordinates cords)
+        public Ship(Coordinates cords, int textureWidth, int textureHeight)
         {
             this._coordinates = new Coordinates(cords.x, cords.y);
+            this.textureWidth = textureWidth;
+            this.textureHeight = textureHeight;
         }
 
         public void Move()

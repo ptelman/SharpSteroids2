@@ -52,12 +52,14 @@ namespace SharpController
                 lastMessageSend = DateTime.Now;
                 float x = e.Values[0], y = e.Values[1], z = e.Values[2];
 
-                if (x > 4)
+                if (x > 5)
                     manager.Send(Model.Directions.Left);
-                else if (x < -4)
+                else if (x < -5)
                     manager.Send(Model.Directions.Right);
-                else if (y < 4)
+                else if (y < -5)
                     manager.Send(Model.Directions.Up);
+                else
+                    manager.Send(Model.Directions.None);
             }
 
         }

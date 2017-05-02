@@ -3,7 +3,9 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SharpSteroids.Base.Model;
 using SharpSteroids.Base.Model.Objects;
+using SharpSteroids.Controller;
 using SharpSteroids.Model;
+using SharpSteroids.Model.Enum;
 using System;
 using System.Collections.Generic;
 
@@ -20,6 +22,7 @@ namespace SharpSteroids
         private Texture2D asteroidTexture;
         private Texture2D shootTexture;
         private SpriteFont Font1;
+        private RemoteController remoteController;
 
         private int score = 0;
         private float shootTimer = 0.3f;
@@ -48,6 +51,8 @@ namespace SharpSteroids
         {
             // TODO: Add your initialization logic here
             base.Initialize();
+            this.remoteController = new RemoteController();
+            this.remoteController.Initialize();
         }
 
         /// <summary>
@@ -87,16 +92,28 @@ namespace SharpSteroids
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-            KeyboardState currentState = Keyboard.GetState();
-            if (currentState.IsKeyDown(Keys.Right))
+            //KeyboardState currentState = Keyboard.GetState();
+            //if (currentState.IsKeyDown(Keys.Right))
+            //{
+            //    GameSharedItems.Ship.Angle += 0.1f;
+            //}
+            //if (currentState.IsKeyDown(Keys.Left))
+            //{
+            //    GameSharedItems.Ship.Angle -= 0.1f;
+            //}
+            //if (currentState.IsKeyDown(Keys.Up))
+            //{
+            //    GameSharedItems.Ship.MoveForwards();
+            //}
+            if (remoteController.lastDirection == Directions.Right)
             {
                 GameSharedItems.Ship.Angle += 0.1f;
             }
-            if (currentState.IsKeyDown(Keys.Left))
+            if (remoteController.lastDirection == Directions.Left)
             {
                 GameSharedItems.Ship.Angle -= 0.1f;
             }
-            if (currentState.IsKeyDown(Keys.Up))
+            if (remoteController.lastDirection == Directions.Up)
             {
                 GameSharedItems.Ship.MoveForwards();
             }

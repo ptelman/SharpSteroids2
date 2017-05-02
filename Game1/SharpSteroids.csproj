@@ -44,6 +44,7 @@
     <Compile Include="Game1.cs" />
     <Compile Include="Helpers\TrigonometryHelper.cs" />
     <Compile Include="Model\Coordinates.cs" />
+    <Compile Include="Model\Enum\Directions.cs" />
     <Compile Include="Model\GameSharedItems.cs" />
     <Compile Include="Model\Interfaces\IGameObject.cs" />
     <Compile Include="Model\Objects\Asteroid.cs" />
@@ -51,6 +52,7 @@
     <Compile Include="Model\Objects\Shoot.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Controller\RemoteController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">

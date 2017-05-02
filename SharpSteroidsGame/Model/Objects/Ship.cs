@@ -58,7 +58,7 @@ namespace SharpSteroids.Base.Model.Objects
 
         public void MoveForwards()
         {
-            var speedToAdd = TrigonometryHelper.MoveByIntoDirection(0.2f, Angle);
+            var speedToAdd = TrigonometryHelper.MoveByIntoDirection(0.1f, Angle);
 
             this.speedX += speedToAdd.x;
             this.speedY += speedToAdd.y;

@@ -92,26 +92,13 @@ namespace SharpSteroids
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-            //KeyboardState currentState = Keyboard.GetState();
-            //if (currentState.IsKeyDown(Keys.Right))
-            //{
-            //    GameSharedItems.Ship.Angle += 0.1f;
-            //}
-            //if (currentState.IsKeyDown(Keys.Left))
-            //{
-            //    GameSharedItems.Ship.Angle -= 0.1f;
-            //}
-            //if (currentState.IsKeyDown(Keys.Up))
-            //{
-            //    GameSharedItems.Ship.MoveForwards();
-            //}
             if (remoteController.lastDirection == Directions.Right)
             {
-                GameSharedItems.Ship.Angle += 0.1f;
+                GameSharedItems.Ship.Angle += 0.05f;
             }
             if (remoteController.lastDirection == Directions.Left)
             {
-                GameSharedItems.Ship.Angle -= 0.1f;
+                GameSharedItems.Ship.Angle -= 0.05f;
             }
             if (remoteController.lastDirection == Directions.Up)
             {
@@ -158,9 +145,9 @@ namespace SharpSteroids
             List<Asteroid> asteroids = new List<Asteroid>();
             List<Shoot> shoots = new List<Shoot>();
 
-            foreach(var asteroid in GameSharedItems.Asteroids)
+            foreach (var asteroid in GameSharedItems.Asteroids)
             {
-                foreach(var shoot in GameSharedItems.Shoots)
+                foreach (var shoot in GameSharedItems.Shoots)
                 {
                     var distance = GetDistanceBetweenCoordinates(asteroid.Coordinates, shoot.Coordinates);
                     if (distance < 30)
@@ -171,7 +158,7 @@ namespace SharpSteroids
                     }
                 }
             }
-            foreach(var asteroid in asteroids)
+            foreach (var asteroid in asteroids)
             {
                 GameSharedItems.Asteroids.Remove(asteroid);
             }

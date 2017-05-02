@@ -1,19 +1,22 @@
 ﻿using Android.App;
+using Android.Hardware;
 using Android.OS;
 using Android.Widget;
 using System;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
+using Android.Runtime;
+using Android.Content;
 
 namespace SharpController
 {
     [Activity(Label = "SharpController", MainLauncher = true, Icon = "@drawable/icon")]
-    public class MainActivity : Activity
+    public class MainActivity : Activity, ISensorEventListener
     {
-        private TcpClient tcpclnt;
-        private Stream stm;
-        private int i = 1;
+        private ConnectionManager manager;
+        private DateTime lastMessageSend = DateTime.Now;
+        private SensorManager sensorManager;
 
         protected override void OnCreate(Bundle bundle)
         {
@@ -23,24 +26,52 @@ namespace SharpController
             SetContentView(Resource.Layout.Main);
 
             Button button = FindViewById<Button>(Resource.Id.buttonConnect);
+            sensorManager = (SensorManager)GetSystemService(Context.SensorService);
 
             button.Click += delegate
             {
                 this.buttonOneOnClick();
             };
-
-            tcpclnt = new TcpClient();
-            tcpclnt.Connect("192.168.1.67", 8686);
-
-            stm = tcpclnt.GetStream();
         }
 
         public void buttonOneOnClick()
         {
-            i = (i + 1) % 4;
-            byte[] ba = BitConverter.GetBytes(i);
+            manager = new ConnectionManager();
+            manager.Initialize();
+        }
 
-            stm.Write(ba, 0, ba.Length);
+        public void OnAccuracyChanged(Sensor sensor, [GeneratedEnum] SensorStatus accuracy)
+        {
+            //nothing
+        }
+
+        public void OnSensorChanged(SensorEvent e)
+        {
+            if (DateTime.Now > lastMessageSend.AddMilliseconds(50) && manager != null && manager.Initialized)
+            {
+                lastMessageSend = DateTime.Now;
+                float x = e.Values[0], y = e.Values[1], z = e.Values[2];
+
+                if (x > 4)
+                    manager.Send(Model.Directions.Left);
+                else if (x < -4)
+                    manager.Send(Model.Directions.Right);
+                else if (y < 4)
+                    manager.Send(Model.Directions.Up);
+            }
+
+        }
+
+        protected override void OnResume()
+        {
+            base.OnResume();
+            sensorManager.RegisterListener(this, sensorManager.GetDefaultSensor(SensorType.Accelerometer), SensorDelay.Ui);
+        }
+
+        protected override void OnPause()
+        {
+            base.OnPause();
+            sensorManager.UnregisterListener(this);
         }
     }
 }

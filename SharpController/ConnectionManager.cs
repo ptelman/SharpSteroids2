@@ -21,10 +21,10 @@ namespace SharpController
         private TcpClient tcpClient;
         private Stream stream;
 
-        public void Initialize()
+        public void Initialize(string ip)
         {
             tcpClient = new TcpClient();
-            tcpClient.Connect("192.168.1.67", 8686);
+            tcpClient.Connect(ip, 8686);
 
             stream = tcpClient.GetStream();
             Initialized = true;

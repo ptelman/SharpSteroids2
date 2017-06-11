@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SharpSteroids.Base.Model;
@@ -6,29 +8,29 @@ using SharpSteroids.Base.Model.Objects;
 using SharpSteroids.Controller;
 using SharpSteroids.Model;
 using SharpSteroids.Model.Enum;
-using System;
-using System.Collections.Generic;
 
 namespace SharpSteroids
 {
     /// <summary>
-    /// This is the main type for your game
+    ///     This is the main type for your game
     /// </summary>
-    public class Game1 : Microsoft.Xna.Framework.Game
+    public class Game1 : Game
     {
-        private GraphicsDeviceManager graphics;
-        private SpriteBatch spriteBatch;
-        private Texture2D shipTexture;
         private Texture2D asteroidTexture;
-        private Texture2D shootTexture;
+        private float asteroidTimer = 0.1f;
+        private float baseAsteroidTIMER = 1f;
+        private readonly float baseShootTIMER = 0.6f;
         private SpriteFont Font1;
+        private readonly GraphicsDeviceManager graphics;
+        private int maxScore;
         private RemoteController remoteController;
 
-        private int score = 0;
+        private int score;
+        private Texture2D shipTexture;
+        private Texture2D shootTexture;
+        private Texture2D background;
         private float shootTimer = 0.3f;
-        private float asteroidTimer = 1f;
-        private float baseShootTIMER = 0.3f;
-        private float baseAsteroidTIMER = 1f;
+        private SpriteBatch spriteBatch;
 
         public Game1()
         {
@@ -42,39 +44,40 @@ namespace SharpSteroids
         }
 
         /// <summary>
-        /// Allows the game to perform any initialization it needs to before starting to run.
-        /// This is where it can query for any required services and load any non-graphic
-        /// related content.  Calling base.Initialize will enumerate through any components
-        /// and initialize them as well.
+        ///     Allows the game to perform any initialization it needs to before starting to run.
+        ///     This is where it can query for any required services and load any non-graphic
+        ///     related content.  Calling base.Initialize will enumerate through any components
+        ///     and initialize them as well.
         /// </summary>
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
             base.Initialize();
-            this.remoteController = new RemoteController();
-            this.remoteController.Initialize();
+            remoteController = new RemoteController();
+            remoteController.Initialize();
         }
 
         /// <summary>
-        /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
+        ///     LoadContent will be called once per game and is the place to load
+        ///     all of your content.
         /// </summary>
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            this.shipTexture = Content.Load<Texture2D>("Textures\\ship");
-            this.shootTexture = Content.Load<Texture2D>("Textures\\torpedo");
-            this.asteroidTexture = Content.Load<Texture2D>("Textures\\asteroid");
-            this.Font1 = Content.Load<SpriteFont>("Font");
+            shipTexture = Content.Load<Texture2D>("Textures\\ship");
+            shootTexture = Content.Load<Texture2D>("Textures\\torpedo");
+            asteroidTexture = Content.Load<Texture2D>("Textures\\asteroid");
+            background = Content.Load<Texture2D>("Textures\\background");
+            Font1 = Content.Load<SpriteFont>("Font");
 
             GameSharedItems.Ship = new Ship(new Coordinates(300, 300), shipTexture.Width, shipTexture.Height);
             // TODO: use this.Content to load your game content here
         }
 
         /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// all content.
+        ///     UnloadContent will be called once per game and is the place to unload
+        ///     all content.
         /// </summary>
         protected override void UnloadContent()
         {
@@ -82,28 +85,38 @@ namespace SharpSteroids
         }
 
         /// <summary>
-        /// Allows the game to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
+        ///     Allows the game to run logic such as updating the world,
+        ///     checking for collisions, gathering input, and playing audio.
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-                this.Exit();
+                Exit();
+
+            if (IsTimeToAddAsteroid(gameTime))
+            {
+                var asteroid = new Asteroid(asteroidTexture.Width, asteroidTexture.Height);
+                asteroid.Angle = 1f;
+                GameSharedItems.Asteroids.Add(asteroid);
+            }
+
+            if (IsTimeToFireShoot(gameTime))
+            {
+                var shoot = new Shoot(
+                    new Coordinates(GameSharedItems.Ship.Coordinates.x, GameSharedItems.Ship.Coordinates.y),
+                    shootTexture.Width, shootTexture.Height);
+                shoot.Angle = GameSharedItems.Ship.Angle;
+                GameSharedItems.Shoots.Add(shoot);
+            }
 
             if (remoteController.lastDirection == Directions.Right)
-            {
                 GameSharedItems.Ship.Angle += 0.05f;
-            }
             if (remoteController.lastDirection == Directions.Left)
-            {
                 GameSharedItems.Ship.Angle -= 0.05f;
-            }
             if (remoteController.lastDirection == Directions.Up)
-            {
                 GameSharedItems.Ship.MoveForwards();
-            }
             GameSharedItems.Ship.Move();
 
             DetectShipCollisionWithAsteroid();
@@ -114,7 +127,7 @@ namespace SharpSteroids
         }
 
         /// <summary>
-        /// This is called when the game should draw itself.
+        ///     This is called when the game should draw itself.
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
@@ -123,15 +136,21 @@ namespace SharpSteroids
 
             spriteBatch.Begin();
 
+            var sourceRectangle = new Rectangle(0, 0, GameSharedItems.windowWidth, GameSharedItems.windowHeight);
+            spriteBatch.Draw(background, sourceRectangle, Color.White);
+
             //draw ship
-            Rectangle sourceRectangle = new Rectangle(0, 0, shipTexture.Width, shipTexture.Height);
-            Vector2 origin = new Vector2(shipTexture.Width / 2, shipTexture.Height / 2);
-            spriteBatch.Draw(shipTexture, new Vector2(GameSharedItems.Ship.Coordinates.x, GameSharedItems.Ship.Coordinates.y), sourceRectangle, Color.White, GameSharedItems.Ship.Angle, origin, GameSharedItems.shipScale, SpriteEffects.None, 1);
+            sourceRectangle = new Rectangle(0, 0, shipTexture.Width, shipTexture.Height);
+            var origin = new Vector2(shipTexture.Width / 2, shipTexture.Height / 2);
+            spriteBatch.Draw(shipTexture,
+                new Vector2(GameSharedItems.Ship.Coordinates.x, GameSharedItems.Ship.Coordinates.y), sourceRectangle,
+                Color.White, GameSharedItems.Ship.Angle, origin, GameSharedItems.shipScale, SpriteEffects.None, 1);
 
             DrawShoots(gameTime);
             DrawAsteroids(gameTime);
 
             spriteBatch.DrawString(Font1, $"Score: {score}", new Vector2(5, 5), Color.Black);
+            spriteBatch.DrawString(Font1, $"Max score: {maxScore}", new Vector2(150, 5), Color.Black);
 
             spriteBatch.End();
 
@@ -140,32 +159,38 @@ namespace SharpSteroids
             base.Draw(gameTime);
         }
 
+        private void ResetGame()
+        {
+            GameSharedItems.Asteroids = new List<Asteroid>();
+            GameSharedItems.Shoots = new List<Shoot>();
+            if (score > maxScore)
+                maxScore = score;
+
+            score = 0;
+            GameSharedItems.Ship = new Ship(new Coordinates(300, 300), shipTexture.Width, shipTexture.Height);
+            baseAsteroidTIMER = 1f;
+        }
+
         private void DetectShootsCollisionWithAsteroids()
         {
-            List<Asteroid> asteroids = new List<Asteroid>();
-            List<Shoot> shoots = new List<Shoot>();
+            var asteroids = new List<Asteroid>();
+            var shoots = new List<Shoot>();
 
             foreach (var asteroid in GameSharedItems.Asteroids)
+            foreach (var shoot in GameSharedItems.Shoots)
             {
-                foreach (var shoot in GameSharedItems.Shoots)
+                var distance = GetDistanceBetweenCoordinates(asteroid.Coordinates, shoot.Coordinates);
+                if (distance < 30)
                 {
-                    var distance = GetDistanceBetweenCoordinates(asteroid.Coordinates, shoot.Coordinates);
-                    if (distance < 30)
-                    {
-                        asteroids.Add(asteroid);
-                        shoots.Add(shoot);
-                        score++;
-                    }
+                    asteroids.Add(asteroid);
+                    shoots.Add(shoot);
+                    score++;
                 }
             }
             foreach (var asteroid in asteroids)
-            {
                 GameSharedItems.Asteroids.Remove(asteroid);
-            }
             foreach (var shoot in shoots)
-            {
                 GameSharedItems.Shoots.Remove(shoot);
-            }
         }
 
         private void DetectShipCollisionWithAsteroid()
@@ -174,57 +199,44 @@ namespace SharpSteroids
             {
                 var distance = GetDistanceBetweenCoordinates(GameSharedItems.Ship.Coordinates, asteroid.Coordinates);
                 if (distance <= 40)
-                {
-                    //ship collided with asteroid
-                }
+                    ResetGame();
             }
         }
 
         private void DrawAsteroids(GameTime gameTime)
         {
-            if (IsTimeToAddAsteroid(gameTime))
-            {
-                var asteroid = new Asteroid(asteroidTexture.Width, asteroidTexture.Height);
-                asteroid.Angle = 1f;
-                GameSharedItems.Asteroids.Add(asteroid);
-            }
-
             foreach (var item in GameSharedItems.Asteroids)
             {
                 item.Move();
-                Rectangle sourceRectangle = new Rectangle(0, 0, asteroidTexture.Width, asteroidTexture.Height);
-                Vector2 origin = new Vector2(asteroidTexture.Width / 2, asteroidTexture.Height / 2);
+                var sourceRectangle = new Rectangle(0, 0, asteroidTexture.Width, asteroidTexture.Height);
+                var origin = new Vector2(asteroidTexture.Width / 2, asteroidTexture.Height / 2);
 
-                spriteBatch.Draw(asteroidTexture, new Vector2(item.Coordinates.x, item.Coordinates.y), sourceRectangle, Color.White, item.Angle, origin, GameSharedItems.asteroidScale, SpriteEffects.None, 1);
+                spriteBatch.Draw(asteroidTexture, new Vector2(item.Coordinates.x, item.Coordinates.y), sourceRectangle,
+                    Color.White, item.Angle, origin, GameSharedItems.asteroidScale, SpriteEffects.None, 1);
             }
         }
 
         private void DrawShoots(GameTime gameTime)
         {
-            if (IsTimeToFireShoot(gameTime))
-            {
-                var shoot = new Shoot(new Model.Coordinates(GameSharedItems.Ship.Coordinates.x, GameSharedItems.Ship.Coordinates.y), shootTexture.Width, shootTexture.Height);
-                shoot.Angle = GameSharedItems.Ship.Angle;
-                GameSharedItems.Shoots.Add(shoot);
-            }
-
             foreach (var item in GameSharedItems.Shoots)
             {
                 item.Move();
                 //HERDASFAWFAWVAWEFAWERAWER HEIGHT/2!!!!!!!!!
-                Rectangle sourceRectangle = new Rectangle(0, 0, shootTexture.Width, shootTexture.Height / 2);
-                Vector2 origin = new Vector2(shootTexture.Width / 2, shootTexture.Height / 2);
+                var sourceRectangle = new Rectangle(0, 0, shootTexture.Width, shootTexture.Height / 2);
+                var origin = new Vector2(shootTexture.Width / 2, shootTexture.Height / 2);
 
-                spriteBatch.Draw(shootTexture, new Vector2(item.Coordinates.x, item.Coordinates.y), sourceRectangle, Color.White, item.Angle, origin, GameSharedItems.shootScale, SpriteEffects.None, 1);
+                spriteBatch.Draw(shootTexture, new Vector2(item.Coordinates.x, item.Coordinates.y), sourceRectangle,
+                    Color.White, item.Angle, origin, GameSharedItems.shootScale, SpriteEffects.None, 1);
             }
         }
 
         private bool IsTimeToAddAsteroid(GameTime gameTime)
         {
-            float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            var elapsed = (float) gameTime.ElapsedGameTime.TotalSeconds;
             asteroidTimer -= elapsed;
             if (asteroidTimer < 0)
             {
+                baseAsteroidTIMER *= 0.99f;
                 asteroidTimer = baseAsteroidTIMER;
                 return true;
             }
@@ -233,7 +245,7 @@ namespace SharpSteroids
 
         private bool IsTimeToFireShoot(GameTime gameTime)
         {
-            float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            var elapsed = (float) gameTime.ElapsedGameTime.TotalSeconds;
             shootTimer -= elapsed;
             if (shootTimer < 0)
             {
@@ -245,7 +257,7 @@ namespace SharpSteroids
 
         private float GetDistanceBetweenCoordinates(Coordinates item1, Coordinates item2)
         {
-            return (float)Math.Sqrt(Math.Pow((item1.x - item2.x), 2) + Math.Pow((item1.y - item2.y), 2));
+            return (float) Math.Sqrt(Math.Pow(item1.x - item2.x, 2) + Math.Pow(item1.y - item2.y, 2));
         }
     }
 }

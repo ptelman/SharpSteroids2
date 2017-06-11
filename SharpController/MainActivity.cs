@@ -36,8 +36,9 @@ namespace SharpController
 
         public void buttonOneOnClick()
         {
+            string ip = FindViewById<EditText>(Resource.Id.editTextIpAddress).Text;
             manager = new ConnectionManager();
-            manager.Initialize();
+            manager.Initialize(ip);
         }
 
         public void OnAccuracyChanged(Sensor sensor, [GeneratedEnum] SensorStatus accuracy)

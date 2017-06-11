@@ -7,7 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/editTextIpAddress"
-        android:text="192.168.1.67" />
+        android:text="192.168.1.69" />
     <Button
         android:text="Connect"
         android:layout_width="match_parent"

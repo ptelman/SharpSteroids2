@@ -42,9 +42,32 @@ namespace SharpSteroids.Base.Model.Objects
 
         public Asteroid(int textureWidth, int textureHeight)
         {
-            this._coordinates = new Coordinates(GameSharedItems.random.Next(0, GameSharedItems.windowWidth), -20);
-            this.speedX = GameSharedItems.random.Next(2, 10) / 10;
-            this.speedY = GameSharedItems.random.Next(3, 15) / 10;
+            int random = GameSharedItems.random.Next() % 4;
+            if(random == 0)
+            {
+                this._coordinates = new Coordinates(GameSharedItems.random.Next(0, GameSharedItems.windowWidth), -20);
+                this.speedX = GameSharedItems.random.Next(-10, 10) / 10;
+                this.speedY = GameSharedItems.random.Next(3, 15) / 10;
+            }
+            else if (random == 1)
+            {
+                this._coordinates = new Coordinates(GameSharedItems.random.Next(0, GameSharedItems.windowWidth), GameSharedItems.windowHeight + 20);
+                this.speedX = GameSharedItems.random.Next(-10, 10) / 10;
+                this.speedY = -1 * (GameSharedItems.random.Next(3, 15) / 10);
+            }
+            else if (random == 2)
+            {
+                this._coordinates = new Coordinates(-20, GameSharedItems.random.Next(0, GameSharedItems.windowHeight));
+                this.speedX = GameSharedItems.random.Next(3, 15) / 10;
+                this.speedY = GameSharedItems.random.Next(-10, 10) / 10;
+            }
+            else if (random == 3)
+            {
+                this._coordinates = new Coordinates(GameSharedItems.windowWidth + 20, GameSharedItems.random.Next(0, GameSharedItems.windowHeight));
+                this.speedX = -1 * (GameSharedItems.random.Next(3, 15) / 10);
+                this.speedY = GameSharedItems.random.Next(-10, 10) / 10;
+            }
+            
             this.textureWidth = textureWidth;
             this.textureHeight = textureHeight;
         }

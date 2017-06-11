@@ -15,7 +15,7 @@ namespace SharpSteroids.Controller
 
         public void Initialize()
         {
-            IPAddress ipAd = IPAddress.Parse("192.168.1.67");
+            IPAddress ipAd = IPAddress.Parse("192.168.1.69");
             myList = new TcpListener(ipAd, 8686);
 
             myList.Start();

@@ -25,6 +25,10 @@ namespace SharpSteroids.Base.Model
                 }
                 return _asteroids;
             }
+            set
+            {
+                _asteroids = value;
+            }
         }
 
         public static IList<Shoot> Shoots
@@ -36,6 +40,10 @@ namespace SharpSteroids.Base.Model
                     _shoots = new List<Shoot>();
                 }
                 return _shoots;
+            }
+            set
+            {
+                _shoots = value;
             }
         }
     }

@@ -31,6 +31,7 @@ namespace SharpSteroids
         private Texture2D background;
         private float shootTimer = 0.3f;
         private SpriteBatch spriteBatch;
+        private ParticleEngine particleEngine;
 
         public Game1()
         {
@@ -72,6 +73,12 @@ namespace SharpSteroids
             Font1 = Content.Load<SpriteFont>("Font");
 
             GameSharedItems.Ship = new Ship(new Coordinates(300, 300), shipTexture.Width, shipTexture.Height);
+
+            List<Texture2D> textures = new List<Texture2D>();
+            textures.Add(Content.Load<Texture2D>("Textures\\circle"));
+            textures.Add(Content.Load<Texture2D>("Textures\\star"));
+            this.particleEngine = new ParticleEngine(textures, new Vector2(GameSharedItems.Ship.Coordinates.x, GameSharedItems.Ship.Coordinates.y));
+
             // TODO: use this.Content to load your game content here
         }
 
@@ -119,6 +126,9 @@ namespace SharpSteroids
                 GameSharedItems.Ship.MoveForwards();
             GameSharedItems.Ship.Move();
 
+            particleEngine.EmitterLocation = new Vector2(GameSharedItems.Ship.Coordinates.x, GameSharedItems.Ship.Coordinates.y);
+            particleEngine.Update();
+
             DetectShipCollisionWithAsteroid();
             DetectShootsCollisionWithAsteroids();
             // TODO: Add your update logic here
@@ -139,19 +149,21 @@ namespace SharpSteroids
             var sourceRectangle = new Rectangle(0, 0, GameSharedItems.windowWidth, GameSharedItems.windowHeight);
             spriteBatch.Draw(background, sourceRectangle, Color.White);
 
+            particleEngine.Draw(spriteBatch);
+
             //draw ship
             sourceRectangle = new Rectangle(0, 0, shipTexture.Width, shipTexture.Height);
             var origin = new Vector2(shipTexture.Width / 2, shipTexture.Height / 2);
             spriteBatch.Draw(shipTexture,
                 new Vector2(GameSharedItems.Ship.Coordinates.x, GameSharedItems.Ship.Coordinates.y), sourceRectangle,
-                Color.White, GameSharedItems.Ship.Angle, origin, GameSharedItems.shipScale, SpriteEffects.None, 1);
+                Color.White, GameSharedItems.Ship.Angle, origin, GameSharedItems.shipScale, SpriteEffects.None, 0f);
 
             DrawShoots(gameTime);
             DrawAsteroids(gameTime);
 
             spriteBatch.DrawString(Font1, $"Score: {score}", new Vector2(5, 5), Color.Black);
             spriteBatch.DrawString(Font1, $"Max score: {maxScore}", new Vector2(150, 5), Color.Black);
-
+            
             spriteBatch.End();
 
             // TODO: Add your drawing code here
